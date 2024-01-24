@@ -58,37 +58,8 @@ public class StartConsole {
                     opcao2();
                     break;
                 case "3":
-                    System.out.println("========== ADICIONAR VEICULO ===========\n");
-
-                    try {
-                        System.out.print("Informe o NIF do proprietário do veículo: ");
-                        nif = scanner.nextLine();
-                        pessoa = programController.getPessoa(nif);
-
-                        veiculo = new Veiculo();
-                        System.out.print("Informe a matricula do veiculo ('XXXXXX' 6 digitos): ");
-                        veiculo.setMatricula(scanner.nextLine());
-                        System.out.print("Informe a marca do veiculo: ");
-                        veiculo.setMarca(scanner.nextLine());
-                        System.out.print("Informe o modelo do veiculo: ");
-                        veiculo.setModelo(scanner.nextLine());
-                        System.out.print("Informe o chassi do veiculo ('XXXXXXXXXXXX' 12 digitos): ");
-                        veiculo.setChassi(scanner.nextLine());
-                        System.out.print("Informe a cilindrada do veiculo: ");
-                        veiculo.setCilindrada(scanner.nextLine());
-                        System.out.print("Informe a quantidade de lugares do veiculo: ");
-                        veiculo.setLugares(scanner.nextLine());
-                        System.out.print("Informe a quantidade de portas do veiculo: ");
-                        veiculo.setPortas(scanner.nextLine());
-
-                        programController.adicionarVeiculo(veiculo.getMatricula(), veiculo, pessoa);
-
-                        System.out.println("\nVeiculo adicionado com sucesso!");
-
-                    } catch (EmptyHashtableException | PersonNotFoundException | MoreThanThreeVehiclesException
-                            | InvalidVehicleDataException e) {
-                        System.out.println("\n" + e.getMessage());
-                    }
+                    /* comentario */
+                    opcao3();
                     break;
                 case "4":
                     System.out.println("========== REMOVER VEICULO ===========\n");
@@ -263,6 +234,40 @@ public class StartConsole {
             programController.removerPessoa(nif);
             System.out.println("\nRegisto removido com sucesso!");
         } catch (EmptyHashtableException | PersonNotFoundException | VehicleNotFoundException | SQLException e) {
+            System.out.println("\n" + e.getMessage());
+        }
+    }
+
+    public static void opcao3() {
+        System.out.println("========== ADICIONAR VEICULO ===========\n");
+
+        try {
+            System.out.print("Informe o NIF do proprietário do veículo: ");
+            nif = scanner.nextLine();
+            pessoa = programController.getPessoa(nif);
+
+            veiculo = new Veiculo();
+            System.out.print("Informe a matricula do veiculo ('XXXXXX' 6 digitos): ");
+            veiculo.setMatricula(scanner.nextLine());
+            System.out.print("Informe a marca do veiculo: ");
+            veiculo.setMarca(scanner.nextLine());
+            System.out.print("Informe o modelo do veiculo: ");
+            veiculo.setModelo(scanner.nextLine());
+            System.out.print("Informe o chassi do veiculo ('XXXXXXXXXXXX' 12 digitos): ");
+            veiculo.setChassi(scanner.nextLine());
+            System.out.print("Informe a cilindrada do veiculo: ");
+            veiculo.setCilindrada(scanner.nextLine());
+            System.out.print("Informe a quantidade de lugares do veiculo: ");
+            veiculo.setLugares(scanner.nextLine());
+            System.out.print("Informe a quantidade de portas do veiculo: ");
+            veiculo.setPortas(scanner.nextLine());
+
+            programController.adicionarVeiculo(veiculo.getMatricula(), veiculo, pessoa);
+
+            System.out.println("\nVeiculo adicionado com sucesso!");
+
+        } catch (EmptyHashtableException | PersonNotFoundException | MoreThanThreeVehiclesException
+                 | InvalidVehicleDataException e) {
             System.out.println("\n" + e.getMessage());
         }
     }
