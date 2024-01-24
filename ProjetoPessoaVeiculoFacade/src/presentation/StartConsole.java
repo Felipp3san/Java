@@ -62,24 +62,8 @@ public class StartConsole {
                     opcao3();
                     break;
                 case "4":
-                    System.out.println("========== REMOVER VEICULO ===========\n");
-
-                    try {
-                        System.out.print("Informe o NIF do proprietário do veículo: ");
-                        nif = scanner.nextLine();
-                        pessoa = programController.getPessoa(nif);
-
-                        System.out.print("Informe a matricula do veículo ('XXXXXX' 6 digitos): ");
-                        matricula = scanner.nextLine();
-                        programController.getVeiculo(matricula);
-
-                        programController.removerVeiculo(matricula, pessoa);
-
-                        System.out.println("\nVeiculo removido com sucesso!");
-
-                    } catch (EmptyHashtableException | VehicleNotFoundException | PersonNotFoundException e) {
-                        System.out.println("\n" + e.getMessage());
-                    }
+                    /* comentario */
+                    opcao4();
                     break;
                 case "5":
                     System.out.println("========== LISTAR VEICULOS ===========\n");
@@ -268,6 +252,27 @@ public class StartConsole {
 
         } catch (EmptyHashtableException | PersonNotFoundException | MoreThanThreeVehiclesException
                  | InvalidVehicleDataException e) {
+            System.out.println("\n" + e.getMessage());
+        }
+    }
+
+    public static void opcao4(){
+        System.out.println("========== REMOVER VEICULO ===========\n");
+
+        try {
+            System.out.print("Informe o NIF do proprietário do veículo: ");
+            nif = scanner.nextLine();
+            pessoa = programController.getPessoa(nif);
+
+            System.out.print("Informe a matricula do veículo ('XXXXXX' 6 digitos): ");
+            matricula = scanner.nextLine();
+            programController.getVeiculo(matricula);
+
+            programController.removerVeiculo(matricula, pessoa);
+
+            System.out.println("\nVeiculo removido com sucesso!");
+
+        } catch (EmptyHashtableException | VehicleNotFoundException | PersonNotFoundException e) {
             System.out.println("\n" + e.getMessage());
         }
     }
