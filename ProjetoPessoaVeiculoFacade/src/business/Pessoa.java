@@ -90,16 +90,16 @@ public class Pessoa {
         return apelido;
     }
 
+    public String getIdade() {
+        return this.idade;
+    }
+
     public String getNomeCompleto() {
         return getNome() + " " + getApelido();
     }
 
-    public ArrayList<Veiculo> getVeiculos() throws VehicleNotFoundException {
-        if (!veiculos.isEmpty()) {
+    public ArrayList<Veiculo> getVeiculos() {
             return veiculos;
-        } else {
-            throw new VehicleNotFoundException("A lista de veículos da pessoa está vazia.");
-        }
     }
 
     public void setVeiculo(Veiculo veiculo) throws MoreThanThreeVehiclesException {
@@ -158,4 +158,5 @@ public class Pessoa {
                 "Veiculos:\n" + veiculos + "\n" +
                 "\n======================================\n";
     }
+
 }

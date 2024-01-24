@@ -1,23 +1,33 @@
 package business;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
-import java.util.Collection;
-import java.util.Hashtable;
 import exceptions.EmptyHashtableException;
 import exceptions.MoreThanThreeVehiclesException;
 import exceptions.PersonNotFoundException;
 import exceptions.VehicleNotFoundException;
 import persistance.DbWorker;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Hashtable;
+
 public class GestorPessoas {
 
-    DbWorker dbWorker = null;
     static Hashtable<String, Pessoa> pessoas = new Hashtable<>();
 
     public GestorPessoas() throws SQLException {
-        dbWorker = new DbWorker();
+
+        ResultSet resultSet = DbWorker.buscarPessoas();
+
+        while(resultSet.next()){
+            Pessoa pessoa = new Pessoa(
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getString(3),
+                    resultSet.getString(4)
+                    );
+            pessoas.put(resultSet.getString(1), pessoa);
+        }
     }
 
     public void adicionarPessoa(Pessoa pessoa) throws SQLException {
@@ -25,16 +35,23 @@ public class GestorPessoas {
         String nif = pessoa.getNif();
         String nome = pessoa.getNome();
         String apelido = pessoa.getApelido();
+        String idade = pessoa.getIdade();
 
-        dbWorker.adicionarPessoa(nif, nome, apelido);
+        DbWorker.adicionarPessoa(nif, nome, apelido, idade);
+
         pessoas.put(pessoa.getNif(), pessoa);
     }
 
-    public void removerPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException {
+    public void removerPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException, SQLException {
 
         if (!pessoas.isEmpty()) {
-            if (pessoas.remove(nif) == null) {
-                throw new PersonNotFoundException("Pessoa não encontrada.");
+            if(!DbWorker.removerPessoa(nif)){
+                throw new SQLException("Pessoa não encontrada na base de dados.");
+            }
+            else {
+                if (pessoas.remove(nif) == null) {
+                    throw new PersonNotFoundException("Pessoa não encontrada.");
+                }
             }
         } else {
             throw new EmptyHashtableException("A lista de pessoas está vazia.");
@@ -94,7 +111,7 @@ public class GestorPessoas {
         }
     }
 
-    public ResultSet getPessoasBD() throws SQLException, SQLTimeoutException {
-        return dbWorker.buscarPessoas();
+    public ResultSet getPessoasBD() throws SQLException {
+        return DbWorker.buscarPessoas();
     }
 }
