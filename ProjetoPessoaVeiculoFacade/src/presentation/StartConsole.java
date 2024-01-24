@@ -1,10 +1,11 @@
 package presentation;
 
 import business.Pessoa;
-import business.Veiculo;
 import business.ProgramController;
+import business.Veiculo;
 import exceptions.*;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -12,16 +13,15 @@ import java.util.Scanner;
 public class StartConsole {
 
     static Scanner scanner = new Scanner(System.in);
+    static Pessoa pessoa;
+    static Veiculo veiculo;
+    static String op = "";
+    static String nif;
+    static String matricula;
+    static ProgramController programController = null;
+
 
     public static void main(String[] args) {
-
-        ProgramController programController = null;
-
-        Pessoa pessoa;
-        Veiculo veiculo;
-        String op = "";
-        String nif;
-        String matricula;
 
         /*
          * Tenta estabelecer conexão com a base de bases,
@@ -29,7 +29,7 @@ public class StartConsole {
          */
         try {
             programController = new ProgramController();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("\n" + e.getMessage());
             op = "0";
         }
@@ -49,45 +49,13 @@ public class StartConsole {
                      * cria uma nova instância de pessoa e envia
                      * para a hashtable da classe 'gestor de pessoas'.
                      */
-                    System.out.println("========== ADICIONAR PESSOA ===========\n");
-
-                    try {
-
-                        pessoa = new Pessoa();
-                        System.out.print("Informe o NIF: ");
-
-                        pessoa.setNif(scanner.nextLine());
-                        System.out.print("Informe o nome: ");
-                        pessoa.setNome(scanner.nextLine());
-                        System.out.print("Informe o apelido: ");
-                        pessoa.setApelido(scanner.nextLine());
-                        System.out.print("Informe a idade: ");
-                        pessoa.setIdade(scanner.nextLine());
-
-                        programController.adicionarPessoa(pessoa);
-                        System.out.println("\nNova pessoa adicionada com sucesso!");
-
-                    } catch (InvalidPersonDataException | SQLException e) {
-                        System.out.println("\n" + e.getMessage());
-                    }
-
+                    opcao1();
                     break;
                 case "2":
-                    System.out.println("========== REMOVER PESSOA ===========\n");
-                    System.out.print("Informe o NIF da pessoa a ser removida: ");
-                    nif = scanner.nextLine();
-
-                    try {
-                        pessoa = programController.getPessoa(nif);
-                        for (Veiculo veiculoCiclo : pessoa.getVeiculos().reversed()) {
-                            matricula = veiculoCiclo.getMatricula();
-                            programController.removerVeiculo(matricula, pessoa);
-                        }
-                        programController.removerPessoa(nif);
-                        System.out.println("\nRegisto removido com sucesso!");
-                    } catch (EmptyHashtableException | PersonNotFoundException | VehicleNotFoundException e) {
-                        System.out.println("\n" + e.getMessage());
-                    }
+                    /*
+                     * remove uma pessoa da hashtable da classe 'gestor de pessoas' e da base de dados.
+                     */
+                    opcao2();
                     break;
                 case "3":
                     System.out.println("========== ADICIONAR VEICULO ===========\n");
@@ -154,7 +122,7 @@ public class StartConsole {
                         System.out.println(
                                 "\nNome completo: " + pessoa.getNomeCompleto() + "\n\n" + pessoa.getVeiculos());
 
-                    } catch (EmptyHashtableException | VehicleNotFoundException | PersonNotFoundException e) {
+                    } catch (EmptyHashtableException | PersonNotFoundException e) {
                         System.out.println("\n" + e.getMessage());
                     }
                     break;
@@ -202,7 +170,7 @@ public class StartConsole {
 
                         while (pessoas.next()) {
                             System.out.println("NIF: " + pessoas.getInt(1) +
-                                    " - NOME: " + pessoas.getString(2) + " " + pessoas.getString(3));
+                                " - NOME: " + pessoas.getString(2) + " " + pessoas.getString(3));
                         }
 
                     } catch (SQLException e) {
@@ -254,5 +222,48 @@ public class StartConsole {
     public static void aguardarInput() {
         System.out.print("\nPressione uma tecla para prosseguir...");
         scanner.nextLine();
+    }
+
+    public static void opcao1() {
+        System.out.println("========== ADICIONAR PESSOA ===========\n");
+
+        try {
+            pessoa = new Pessoa();
+            System.out.print("Informe o NIF: ");
+
+            pessoa.setNif(scanner.nextLine());
+            System.out.print("Informe o nome: ");
+            pessoa.setNome(scanner.nextLine());
+            System.out.print("Informe o apelido: ");
+            pessoa.setApelido(scanner.nextLine());
+            System.out.print("Informe a idade: ");
+            pessoa.setIdade(scanner.nextLine());
+
+            programController.adicionarPessoa(pessoa);
+            System.out.println("\nNova pessoa adicionada com sucesso!");
+
+        } catch (InvalidPersonDataException | SQLException e) {
+            System.out.println("\n" + e.getMessage());
+        }
+    }
+
+    public static void opcao2(){
+        System.out.println("========== REMOVER PESSOA ===========\n");
+        System.out.print("Informe o NIF da pessoa a ser removida: ");
+        nif = scanner.nextLine();
+
+        try {
+            pessoa = programController.getPessoa(nif);
+            if (pessoa.getVeiculos() != null){
+                for (Veiculo veiculoCiclo : pessoa.getVeiculos().reversed()) {
+                    matricula = veiculoCiclo.getMatricula();
+                    programController.removerVeiculo(matricula, pessoa);
+                }
+            }
+            programController.removerPessoa(nif);
+            System.out.println("\nRegisto removido com sucesso!");
+        } catch (EmptyHashtableException | PersonNotFoundException | VehicleNotFoundException | SQLException e) {
+            System.out.println("\n" + e.getMessage());
+        }
     }
 }

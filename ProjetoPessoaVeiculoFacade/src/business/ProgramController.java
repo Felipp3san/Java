@@ -4,25 +4,30 @@ import exceptions.EmptyHashtableException;
 import exceptions.MoreThanThreeVehiclesException;
 import exceptions.PersonNotFoundException;
 import exceptions.VehicleNotFoundException;
+import persistance.DbAdapter;
+import persistance.DbWorker;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
 public class ProgramController {
 
-    GestorPessoas gestorPessoas = null;
+    GestorPessoas gestorPessoas;
     GestorVeiculos gestorVeiculos = new GestorVeiculos();
 
-    public ProgramController() throws SQLException {
+    public ProgramController() throws SQLException, IOException {
         gestorPessoas = new GestorPessoas();
     }
 
     public void adicionarPessoa(Pessoa pessoa) throws SQLException {
+
         gestorPessoas.adicionarPessoa(pessoa);
     }
 
-    public void removerPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException {
+    public void removerPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException, SQLException {
         gestorPessoas.removerPessoa(nif);
     }
 

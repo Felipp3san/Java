@@ -2,21 +2,20 @@ package persistance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLTimeoutException;
 
 public class DbWorker {
 
-    DbAdapter dbAdapter = null;
+    private static final DbAdapter dbAdapter = DbAdapter.getInstance();
 
-    public DbWorker() throws SQLException {
-        dbAdapter = new DbAdapter();
-    }
-
-    public ResultSet buscarPessoas() throws SQLException, SQLTimeoutException {
+    public static ResultSet buscarPessoas() throws SQLException {
         return dbAdapter.buscarDados();
     }
 
-    public void adicionarPessoa(String nif, String nome, String apelido) throws SQLException {
-        dbAdapter.executarQuery(nif, nome, apelido);
+    public static void adicionarPessoa(String nif, String nome, String apelido, String idade) throws SQLException {
+        dbAdapter.executarQuery(nif, nome, apelido, idade);
+    }
+
+    public static boolean removerPessoa(String nif) throws SQLException {
+        return dbAdapter.executarQuery(nif);
     }
 }
