@@ -1,9 +1,6 @@
 package business;
 
-import exceptions.EmptyHashtableException;
-import exceptions.MoreThanThreeVehiclesException;
-import exceptions.PersonNotFoundException;
-import exceptions.VehicleNotFoundException;
+import exceptions.*;
 import persistance.DbWorker;
 
 import java.sql.ResultSet;
@@ -17,7 +14,7 @@ public class GestorPessoas {
 
     public GestorPessoas() throws SQLException {
 
-        ResultSet resultSet = DbWorker.buscarPessoas();
+        ResultSet resultSet = DbWorker.inicializarHashtable();
 
         while(resultSet.next()){
             Pessoa pessoa = new Pessoa(
@@ -80,8 +77,8 @@ public class GestorPessoas {
         }
     }
 
-    public void associarVeiculo(Pessoa pessoa, Veiculo veiculo) throws MoreThanThreeVehiclesException {
-        pessoa.setVeiculo(veiculo);
+    public void associarVeiculo(String nif, Veiculo veiculo) throws MoreThanThreeVehiclesException {
+        pessoas.get(nif).setVeiculo(veiculo);
     }
 
     public void desassociarVeiculo(String matricula, Pessoa pessoa) throws VehicleNotFoundException {
@@ -103,15 +100,7 @@ public class GestorPessoas {
         }
     }
 
-    public boolean contains(Pessoa pessoa) throws PersonNotFoundException {
-        if (pessoas.contains(pessoa)) {
-            return true;
-        } else {
-            throw new PersonNotFoundException();
-        }
-    }
-
-    public ResultSet getPessoasBD() throws SQLException {
+    public ResultSet getPessoasBD() throws SQLException, EmptyDatabaseTableException {
         return DbWorker.buscarPessoas();
     }
 }

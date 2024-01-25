@@ -1,13 +1,6 @@
 package business;
 
-import exceptions.EmptyHashtableException;
-import exceptions.MoreThanThreeVehiclesException;
-import exceptions.PersonNotFoundException;
-import exceptions.VehicleNotFoundException;
-import persistance.DbAdapter;
-import persistance.DbWorker;
-
-import java.io.FileNotFoundException;
+import exceptions.*;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,10 +9,11 @@ import java.util.Collection;
 public class ProgramController {
 
     GestorPessoas gestorPessoas;
-    GestorVeiculos gestorVeiculos = new GestorVeiculos();
+    GestorVeiculos gestorVeiculos;
 
-    public ProgramController() throws SQLException, IOException {
+    public ProgramController() throws SQLException, IOException, EmptyDatabaseTableException {
         gestorPessoas = new GestorPessoas();
+        gestorVeiculos = new GestorVeiculos();
     }
 
     public void adicionarPessoa(Pessoa pessoa) throws SQLException {
@@ -39,14 +33,10 @@ public class ProgramController {
         return gestorPessoas.getPessoas();
     }
 
-    public boolean contains(Pessoa pessoa) throws PersonNotFoundException {
-        return gestorPessoas.contains(pessoa);
-    }
-
-    public void adicionarVeiculo(String matricula, Veiculo veiculo, Pessoa pessoa)
-            throws MoreThanThreeVehiclesException {
-        gestorPessoas.associarVeiculo(pessoa, veiculo);
-        gestorVeiculos.adicionarVeiculo(matricula, veiculo);
+    public void adicionarVeiculo(Veiculo veiculo, String nif)
+            throws MoreThanThreeVehiclesException, SQLException {
+        gestorPessoas.associarVeiculo(nif, veiculo);
+        gestorVeiculos.adicionarVeiculo(veiculo, nif);
     }
 
     public void removerVeiculo(String matricula, Pessoa pessoa)
@@ -63,11 +53,11 @@ public class ProgramController {
         return gestorVeiculos.getVeiculos();
     }
 
-    public boolean contains(Veiculo veiculo) throws VehicleNotFoundException {
-        return gestorVeiculos.contains(veiculo);
+    public ResultSet buscarPessoasBD() throws SQLException, EmptyDatabaseTableException {
+        return gestorPessoas.getPessoasBD();
     }
 
-    public ResultSet buscarPessoasBD() throws SQLException {
-        return gestorPessoas.getPessoasBD();
+    public ResultSet buscarVeiculosBD() throws SQLException, EmptyDatabaseTableException {
+        return gestorVeiculos.getVeiculosBD();
     }
 }

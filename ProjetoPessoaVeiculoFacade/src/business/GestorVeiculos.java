@@ -1,8 +1,12 @@
 package business;
 
+import exceptions.EmptyDatabaseTableException;
 import exceptions.EmptyHashtableException;
 import exceptions.VehicleNotFoundException;
+import persistance.DbWorker;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Hashtable;
 
@@ -10,8 +14,13 @@ public class GestorVeiculos {
 
     static Hashtable<String, Veiculo> veiculos = new Hashtable<>();
 
-    public void adicionarVeiculo(String matricula, Veiculo veiculo) {
-        veiculos.put(matricula, veiculo);
+    public GestorVeiculos() {
+
+    }
+    public void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
+
+        DbWorker.adicionarVeiculo(veiculo, nif);
+        veiculos.put(veiculo.getMatricula(), veiculo);
     }
 
     public void removerVeiculo(String matricula) throws EmptyHashtableException, VehicleNotFoundException {
@@ -46,12 +55,7 @@ public class GestorVeiculos {
         }
     }
 
-    public boolean contains(Veiculo veiculo) throws VehicleNotFoundException {
-        if (veiculos.contains(veiculo)) {
-            return true;
-        } else {
-            throw new VehicleNotFoundException();
-        }
+    public ResultSet getVeiculosBD() throws EmptyDatabaseTableException, SQLException {
+        return DbWorker.buscarVeiculos();
     }
-
 }

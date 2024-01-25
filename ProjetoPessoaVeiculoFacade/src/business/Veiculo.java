@@ -34,6 +34,30 @@ public class Veiculo {
         return matricula;
     }
 
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public String getChassi() {
+        return chassi;
+    }
+
+    public String getCilindrada() {
+        return cilindrada;
+    }
+
+    public String getLugares() {
+        return lugares;
+    }
+
+    public String getPortas() {
+        return portas;
+    }
+
     public void setMatricula(String matricula) throws InvalidVehicleDataException {
 
         Pattern pattern = Pattern.compile("^[A-Za-z0-9]{6}$");
@@ -148,6 +172,7 @@ public class Veiculo {
         hash = 29 * hash + Objects.hashCode(this.portas);
         return hash;
     }
+
 
     @Override
     public boolean equals(Object obj) {
