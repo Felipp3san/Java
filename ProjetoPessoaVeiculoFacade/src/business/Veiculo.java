@@ -12,21 +12,28 @@ public class Veiculo {
     private String marca;
     private String modelo;
     private String chassi;
-    private String cilindrada;
     private String lugares;
     private String portas;
+    private double taxaFixaAnual;
 
     public Veiculo() {
+        this.matricula = "";
+        this.marca = "";
+        this.modelo = "";
+        this.chassi = "";
+        this.lugares = "";
+        this.portas = "";
+        this.taxaFixaAnual = 0.0;
     }
 
-    public Veiculo(String matricula, String marca, String modelo, String chassi, String cilindrada, String lugares, String portas) {
-        this.matricula = matricula;
-        this.marca = marca;
-        this.modelo = modelo;
-        this.chassi = chassi;
-        this.cilindrada = cilindrada;
-        this.lugares = lugares;
-        this.portas = portas;
+    public Veiculo(String matricula, String marca, String modelo, String chassi, String lugares, String portas) throws InvalidVehicleDataException {
+        setMatricula(matricula);
+        setMarca(marca);
+        setModelo(modelo);
+        setChassi(chassi);
+        setLugares(lugares);
+        setPortas(portas);
+        this.taxaFixaAnual = 0.0;
     }
 
     public String getMatricula() {
@@ -45,16 +52,16 @@ public class Veiculo {
         return chassi;
     }
 
-    public String getCilindrada() {
-        return cilindrada;
-    }
-
     public String getLugares() {
         return lugares;
     }
 
     public String getPortas() {
         return portas;
+    }
+
+    public double getTaxaFixaAnual() {
+        return taxaFixaAnual;
     }
 
     public void setMatricula(String matricula) throws InvalidVehicleDataException {
@@ -109,19 +116,6 @@ public class Veiculo {
         }
     }
 
-    public void setCilindrada(String cilindrada) throws InvalidVehicleDataException {
-
-        Pattern pattern = Pattern.compile("^[0-9]{1,6}$");
-        Matcher matcher = pattern.matcher(cilindrada);
-        boolean matchFound = matcher.find();
-
-        if (matchFound) {
-            this.cilindrada = cilindrada;
-        } else {
-            throw new InvalidVehicleDataException("Cilindrada inválida.");
-        }
-    }
-
     public void setLugares(String lugares) throws InvalidVehicleDataException {
 
         Pattern pattern = Pattern.compile("^[0-9]{1,2}$");
@@ -148,61 +142,23 @@ public class Veiculo {
         }
     }
 
+    public void setTaxaFixaAnual(double taxaFixaAnual) {
+        this.taxaFixaAnual = taxaFixaAnual;
+    }
+
+    public void setTaxaFixaAnual() {
+    }
+
     @Override
-    public String toString() {
-        return "\n\tMatricula: " + matricula + "\n" +
-                "\tMarca: " + marca + "\n" +
-                "\tModelo: " + modelo + "\n" +
-                "\tChassi: " + chassi + "\n" +
-                "\tCilindrada: " + cilindrada + "\n" +
-                "\tLugares: " + lugares + "\n" +
-                "\tPortas: " + portas + "\n";
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Veiculo veiculo = (Veiculo) o;
+        return Double.compare(taxaFixaAnual, veiculo.taxaFixaAnual) == 0 && Objects.equals(matricula, veiculo.matricula) && Objects.equals(marca, veiculo.marca) && Objects.equals(modelo, veiculo.modelo) && Objects.equals(chassi, veiculo.chassi) && Objects.equals(lugares, veiculo.lugares) && Objects.equals(portas, veiculo.portas);
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.matricula);
-        hash = 29 * hash + Objects.hashCode(this.marca);
-        hash = 29 * hash + Objects.hashCode(this.modelo);
-        hash = 29 * hash + Objects.hashCode(this.chassi);
-        hash = 29 * hash + Objects.hashCode(this.cilindrada);
-        hash = 29 * hash + Objects.hashCode(this.lugares);
-        hash = 29 * hash + Objects.hashCode(this.portas);
-        return hash;
-    }
-
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Veiculo other = (Veiculo) obj;
-        if (!Objects.equals(this.cilindrada, other.cilindrada)) {
-            return false;
-        }
-        if (!Objects.equals(this.lugares, other.lugares)) {
-            return false;
-        }
-        if (!Objects.equals(this.portas, other.portas)) {
-            return false;
-        }
-        if (!Objects.equals(this.matricula, other.matricula)) {
-            return false;
-        }
-        if (!Objects.equals(this.marca, other.marca)) {
-            return false;
-        }
-        if (!Objects.equals(this.modelo, other.modelo)) {
-            return false;
-        }
-        return Objects.equals(this.chassi, other.chassi);
+        return Objects.hash(matricula, marca, modelo, chassi, lugares, portas, taxaFixaAnual);
     }
 }

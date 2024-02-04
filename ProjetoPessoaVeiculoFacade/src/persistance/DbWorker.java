@@ -2,8 +2,9 @@ package persistance;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import business.Veiculo;
 import business.Pessoa;
+import business.VeiculoCombustao;
+import business.VeiculoEletrico;
 
 public class DbWorker {
 
@@ -36,8 +37,12 @@ public class DbWorker {
         return dbAdapter.inicializarHashTableVeiculos();
     }
 
-    public static void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
-        dbAdapter.adicionarVeiculo(veiculo, nif);
+    public static void adicionarVeiculoCombustao(String nif, VeiculoCombustao veiculo) throws SQLException {
+        dbAdapter.adicionarVeiculoCombustao(nif, veiculo);
+    }
+
+    public static void adicionarVeiculoEletrico(String nif, VeiculoEletrico veiculo) throws SQLException {
+        dbAdapter.adicionarVeiculoEletrico(nif, veiculo);
     }
 
     public static boolean removerVeiculo(String matricula) throws SQLException {

@@ -27,20 +27,38 @@ public class GestorPessoas {
             ResultSet veiculosSet = DbWorker.buscarVeiculosPessoa(pessoasSet.getString(1));
 
             while(veiculosSet.next()){
-                Veiculo veiculo = new Veiculo(
-                        veiculosSet.getString(1),
-                        veiculosSet.getString(2),
-                        veiculosSet.getString(3),
-                        veiculosSet.getString(4),
-                        veiculosSet.getString(5),
-                        veiculosSet.getString(6),
-                        veiculosSet.getString(7)
-                );
 
-                try {
-                    pessoa.setVeiculo(veiculo);
-                } catch (MoreThanThreeVehiclesException e) {
-                    throw new RuntimeException(e);
+                if (veiculosSet.getInt(9) == 1) {
+                    VeiculoCombustao veiculo = new VeiculoCombustao(
+                            veiculosSet.getString(1),
+                            veiculosSet.getString(2),
+                            veiculosSet.getString(3),
+                            veiculosSet.getString(4),
+                            veiculosSet.getInt(5),
+                            veiculosSet.getString(6),
+                            veiculosSet.getString(7)
+                    );
+
+                    try {
+                        pessoa.setVeiculoCombustao(veiculo);
+                    } catch (MoreThanThreeVehiclesException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                else {
+                    VeiculoEletrico veiculo = new VeiculoEletrico(
+                            veiculosSet.getString(1),
+                            veiculosSet.getString(2),
+                            veiculosSet.getString(3),
+                            veiculosSet.getString(4),
+                            veiculosSet.getString(6),
+                            veiculosSet.getString(7)
+                    );
+                    try {
+                        pessoa.setVeiculoEletrico(veiculo);
+                    } catch (MoreThanThreeVehiclesException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
 
