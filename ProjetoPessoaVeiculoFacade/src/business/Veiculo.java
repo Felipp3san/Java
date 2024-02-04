@@ -19,8 +19,7 @@ public class Veiculo {
     public Veiculo() {
     }
 
-    public Veiculo(String matricula, String marca, String modelo, String chassi, String cilindrada, String lugares,
-            String portas) {
+    public Veiculo(String matricula, String marca, String modelo, String chassi, String cilindrada, String lugares, String portas) {
         this.matricula = matricula;
         this.marca = marca;
         this.modelo = modelo;

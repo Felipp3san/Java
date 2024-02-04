@@ -2,7 +2,6 @@ package business;
 
 import exceptions.*;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -11,18 +10,25 @@ public class ProgramController {
     GestorPessoas gestorPessoas;
     GestorVeiculos gestorVeiculos;
 
-    public ProgramController() throws SQLException, IOException, EmptyDatabaseTableException {
+    public ProgramController() throws SQLException, IOException {
         gestorPessoas = new GestorPessoas();
         gestorVeiculos = new GestorVeiculos();
     }
 
-    public void adicionarPessoa(Pessoa pessoa) throws SQLException {
 
+
+    // Pessoas
+
+    public void adicionarPessoa(Pessoa pessoa) throws SQLException, MoreThanThreeVehiclesException {
         gestorPessoas.adicionarPessoa(pessoa);
+        gestorPessoas = new GestorPessoas();
     }
 
     public void removerPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException, SQLException {
+        gestorVeiculos.removerVeiculosPessoa(nif);
+        gestorVeiculos = new GestorVeiculos();
         gestorPessoas.removerPessoa(nif);
+        gestorPessoas = new GestorPessoas();
     }
 
     public Pessoa getPessoa(String nif) throws EmptyHashtableException, PersonNotFoundException {
@@ -33,16 +39,22 @@ public class ProgramController {
         return gestorPessoas.getPessoas();
     }
 
+
+
+    // Veiculos
+
     public void adicionarVeiculo(Veiculo veiculo, String nif)
             throws MoreThanThreeVehiclesException, SQLException {
-        gestorPessoas.associarVeiculo(nif, veiculo);
         gestorVeiculos.adicionarVeiculo(veiculo, nif);
+        gestorPessoas = new GestorPessoas();
+        gestorVeiculos = new GestorVeiculos();
     }
 
-    public void removerVeiculo(String matricula, Pessoa pessoa)
-            throws EmptyHashtableException, VehicleNotFoundException {
-        gestorPessoas.desassociarVeiculo(matricula, pessoa);
+    public void removerVeiculo(String matricula)
+            throws EmptyHashtableException, VehicleNotFoundException, SQLException {
         gestorVeiculos.removerVeiculo(matricula);
+        gestorVeiculos = new GestorVeiculos();
+        gestorPessoas = new GestorPessoas();
     }
 
     public Veiculo getVeiculo(String matricula) throws EmptyHashtableException, VehicleNotFoundException {
@@ -51,13 +63,5 @@ public class ProgramController {
 
     public Collection<Veiculo> getVeiculos() throws EmptyHashtableException {
         return gestorVeiculos.getVeiculos();
-    }
-
-    public ResultSet buscarPessoasBD() throws SQLException, EmptyDatabaseTableException {
-        return gestorPessoas.getPessoasBD();
-    }
-
-    public ResultSet buscarVeiculosBD() throws SQLException, EmptyDatabaseTableException {
-        return gestorVeiculos.getVeiculosBD();
     }
 }

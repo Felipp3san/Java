@@ -1,6 +1,5 @@
 package business;
 
-import exceptions.EmptyDatabaseTableException;
 import exceptions.EmptyHashtableException;
 import exceptions.VehicleNotFoundException;
 import persistance.DbWorker;
@@ -12,22 +11,37 @@ import java.util.Hashtable;
 
 public class GestorVeiculos {
 
-    static Hashtable<String, Veiculo> veiculos = new Hashtable<>();
+    Hashtable<String, Veiculo> veiculos = new Hashtable<>();
 
-    public GestorVeiculos() {
+    public GestorVeiculos() throws SQLException {
 
+        ResultSet veiculosSet = DbWorker.inicializarHashtableVeiculos();
+
+        while(veiculosSet.next()){
+            Veiculo veiculo = new Veiculo(
+                    veiculosSet.getString(1),
+                    veiculosSet.getString(2),
+                    veiculosSet.getString(3),
+                    veiculosSet.getString(4),
+                    veiculosSet.getString(5),
+                    veiculosSet.getString(6),
+                    veiculosSet.getString(7)
+                    );
+            veiculos.put(veiculosSet.getString(1), veiculo);
+        }
     }
+
     public void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
 
         DbWorker.adicionarVeiculo(veiculo, nif);
-        veiculos.put(veiculo.getMatricula(), veiculo);
+        new GestorVeiculos();
     }
 
-    public void removerVeiculo(String matricula) throws EmptyHashtableException, VehicleNotFoundException {
+    public void removerVeiculo(String matricula) throws EmptyHashtableException, SQLException {
+
         if (!veiculos.isEmpty()) {
-            if (veiculos.remove(matricula) == null) {
-                throw new VehicleNotFoundException("Veiculo não encontrado.");
-            }
+            if(!DbWorker.removerVeiculo(matricula))
+                throw new SQLException("Veiculo não encontrada na base de dados.");
         } else {
             throw new EmptyHashtableException("A lista de veículos está vazia.");
         }
@@ -55,7 +69,7 @@ public class GestorVeiculos {
         }
     }
 
-    public ResultSet getVeiculosBD() throws EmptyDatabaseTableException, SQLException {
-        return DbWorker.buscarVeiculos();
+    public void removerVeiculosPessoa(String nif) throws SQLException {
+        DbWorker.removerVeiculosPessoa(nif);
     }
 }

@@ -1,7 +1,7 @@
 package persistance;
 
 import business.Veiculo;
-import exceptions.EmptyDatabaseTableException;
+import business.Pessoa;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,46 +34,52 @@ public class DbAdapter {
         return instance;
     }
 
-    public ResultSet inicializarHashTable() throws SQLException {
+
+    // Pessoas
+
+    public ResultSet inicializarHashTablePessoas() throws SQLException {
 
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM pessoa;");
 
         return preparedStatement.executeQuery();
     }
 
-    public ResultSet buscarDados(String tabela) throws SQLException, EmptyDatabaseTableException {
+    public ResultSet buscarVeiculosPessoa(String nif) throws SQLException {
 
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM veiculo WHERE pessoa_nif=?;");
+        preparedStatement.setInt(1, Integer.parseInt(nif));
 
-        if (tabela.equals("pessoa"))
-            preparedStatement = connection.prepareStatement("SELECT * FROM pessoa;");
-        else if (tabela.equals("veiculo"))
-            preparedStatement = connection.prepareStatement("SELECT * FROM veiculo;");
-
-        if (contagemTabela(tabela) > 0 && preparedStatement != null)
-            return preparedStatement.executeQuery();
-        else
-            throw new EmptyDatabaseTableException("Tabela vazia.");
+        return preparedStatement.executeQuery();
     }
 
-    public void executarQuery(String nif, String nome, String apelido, String idade) throws SQLException {
+    public void adicionarPessoa(Pessoa pessoa) throws SQLException {
 
         PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO pessoa VALUES(?, ?, ?, ?);");
-        preparedStatement.setInt(1, Integer.parseInt(nif));
-        preparedStatement.setString(2, nome);
-        preparedStatement.setString(3, apelido);
-        preparedStatement.setString(4, idade);
+        preparedStatement.setInt(1, Integer.parseInt(pessoa.getNif()));
+        preparedStatement.setString(2, pessoa.getNome());
+        preparedStatement.setString(3, pessoa.getApelido());
+        preparedStatement.setString(4, pessoa.getIdade());
 
         preparedStatement.execute();
-
     }
 
-    public boolean executarQuery(String nif) throws SQLException {
+    public boolean removerPessoa(String nif) throws SQLException {
 
         PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM pessoa where nif=?;");
         preparedStatement.setString(1, nif);
 
         return preparedStatement.executeUpdate() == 1;
+    }
+
+
+
+    // Veiculos
+
+    public ResultSet inicializarHashTableVeiculos() throws SQLException {
+
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM veiculo;");
+
+        return preparedStatement.executeQuery();
     }
 
     public void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
@@ -91,22 +97,17 @@ public class DbAdapter {
         preparedStatement.execute();
     }
 
-    public static int contagemTabela(String tabela) throws SQLException {
+    public boolean removerVeiculo(String matricula) throws SQLException {
+        PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM veiculo where matricula=?;");
+        preparedStatement.setString(1, matricula);
 
-        PreparedStatement preparedStatement = null;
+        return preparedStatement.executeUpdate() == 1;
+    }
 
-        if (tabela.equals("pessoa"))
-            preparedStatement  = connection.prepareStatement("SELECT COUNT(*) FROM pessoa;");
-        else if (tabela.equals("veiculo"))
-            preparedStatement  = connection.prepareStatement("SELECT COUNT(*) FROM veiculo;");
+    public void removerVeiculosPessoa(String nif) throws SQLException {
+        PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM veiculo where pessoa_nif=?;");
+        preparedStatement.setString(1, nif);
 
-        if(preparedStatement != null){
-            ResultSet rs = preparedStatement.executeQuery();
-            rs.next();
-            return rs.getInt(1);
-        }
-        else {
-            return 0;
-        }
+        preparedStatement.executeUpdate();
     }
 }

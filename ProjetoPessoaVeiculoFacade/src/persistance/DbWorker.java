@@ -1,36 +1,51 @@
 package persistance;
 
-import exceptions.EmptyDatabaseTableException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import business.Veiculo;
+import business.Pessoa;
 
 public class DbWorker {
 
     private static final DbAdapter dbAdapter = DbAdapter.getInstance();
 
-    public static ResultSet inicializarHashtable() throws SQLException {
-        return dbAdapter.inicializarHashTable();
+
+    // Pessoas
+
+    public static ResultSet inicializarHashtablePessoas() throws SQLException {
+        return dbAdapter.inicializarHashTablePessoas();
     }
 
-    public static ResultSet buscarPessoas() throws SQLException, EmptyDatabaseTableException {
-        return dbAdapter.buscarDados("pessoa");
-    }
-
-    public static void adicionarPessoa(String nif, String nome, String apelido, String idade) throws SQLException {
-        dbAdapter.executarQuery(nif, nome, apelido, idade);
+    public static void adicionarPessoa(Pessoa pessoa) throws SQLException {
+        dbAdapter.adicionarPessoa(pessoa);
     }
 
     public static boolean removerPessoa(String nif) throws SQLException {
-        return dbAdapter.executarQuery(nif);
+        return dbAdapter.removerPessoa(nif);
+    }
+
+    public static ResultSet buscarVeiculosPessoa(String nif) throws SQLException {
+        return dbAdapter.buscarVeiculosPessoa(nif);
+    }
+
+
+
+    // Veiculos
+
+    public static ResultSet inicializarHashtableVeiculos() throws SQLException {
+        return dbAdapter.inicializarHashTableVeiculos();
     }
 
     public static void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
         dbAdapter.adicionarVeiculo(veiculo, nif);
     }
 
-    public static ResultSet buscarVeiculos() throws SQLException, EmptyDatabaseTableException {
-        return dbAdapter.buscarDados("veiculo");
+    public static boolean removerVeiculo(String matricula) throws SQLException {
+        return dbAdapter.removerVeiculo(matricula);
     }
+
+    public static void removerVeiculosPessoa(String nif) throws SQLException {
+        dbAdapter.removerVeiculosPessoa(nif);
+    }
+
 }

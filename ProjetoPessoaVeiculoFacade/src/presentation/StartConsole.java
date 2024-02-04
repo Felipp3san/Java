@@ -6,7 +6,6 @@ import business.Veiculo;
 import exceptions.*;
 
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -28,7 +27,7 @@ public class StartConsole {
          */
         try {
             programController = new ProgramController();
-        } catch (SQLException | IOException | EmptyDatabaseTableException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("\n" + e.getMessage());
             op = "0";
         }
@@ -44,24 +43,15 @@ public class StartConsole {
                     System.out.println("\nPrograma finalizado.");
                     break;
                 case "1":
-                    /*
-                     * cria uma nova instância de pessoa e envia
-                     * para a hashtable da classe 'gestor de pessoas'.
-                     */
                     opcao1();
                     break;
                 case "2":
-                    /*
-                     * remove uma pessoa da hashtable da classe 'gestor de pessoas' e da base de dados.
-                     */
                     opcao2();
                     break;
                 case "3":
-                    /* comentario */
                     opcao3();
                     break;
                 case "4":
-                    /* comentario */
                     opcao4();
                     break;
                 case "5":
@@ -75,12 +65,6 @@ public class StartConsole {
                     break;
                 case "8":
                     opcao8();
-                    break;
-                case "9":
-                    opcao9();
-                    break;
-                case "A": case "a":
-                    opcaoA();
                     break;
                 default:
                     System.out.println("\nOpção inválida.");
@@ -101,8 +85,6 @@ public class StartConsole {
         System.out.println("6 - LISTAR TODAS AS PESSOAS");
         System.out.println("7 - LISTAR PROPRIEDADES DE UMA PESSOA");
         System.out.println("8 - LISTAR TODOS OS VEICULOS");
-        System.out.println("9 - LISTAR TODAS AS PESSOAS DA BASE DE DADOS");
-        System.out.println("A - LISTAR TODOS OS VEICULOS DA BASE DE DADOS");
         System.out.print("\nEscolha uma opção (0 para sair): ");
     }
 
@@ -148,7 +130,7 @@ public class StartConsole {
             programController.adicionarPessoa(pessoa);
             System.out.println("\nNova pessoa adicionada com sucesso!");
 
-        } catch (InvalidPersonDataException | SQLException e) {
+        } catch (InvalidPersonDataException | SQLException | MoreThanThreeVehiclesException e) {
             System.out.println("\n" + e.getMessage());
         }
     }
@@ -202,24 +184,24 @@ public class StartConsole {
         }
     }
 
-    // Remover Veiculo
+    // Remover Veiculo (Hashtable e BD)
     public static void opcao4(){
         System.out.println("========== REMOVER VEICULO ===========\n");
 
         try {
             System.out.print("Informe o NIF do proprietário do veículo: ");
             nif = scanner.nextLine();
-            pessoa = programController.getPessoa(nif);
+            programController.getPessoa(nif);
 
             System.out.print("Informe a matricula do veículo ('XXXXXX' 6 digitos): ");
             matricula = scanner.nextLine();
             programController.getVeiculo(matricula);
 
-            programController.removerVeiculo(matricula, pessoa);
+            programController.removerVeiculo(matricula);
 
             System.out.println("\nVeiculo removido com sucesso!");
 
-        } catch (EmptyHashtableException | VehicleNotFoundException | PersonNotFoundException e) {
+        } catch (EmptyHashtableException | VehicleNotFoundException | PersonNotFoundException | SQLException e) {
             System.out.println("\n" + e.getMessage());
         }
     }
@@ -231,7 +213,6 @@ public class StartConsole {
         try {
             System.out.print("Informe o NIF do proprietário do(s) veículo(s): ");
             nif = scanner.nextLine();
-
             pessoa = programController.getPessoa(nif);
 
             System.out.println(
@@ -259,6 +240,7 @@ public class StartConsole {
         System.out.println("========== LISTAR PESSOA ===========\n");
         System.out.print("Informe o NIF da pessoa: ");
         nif = scanner.nextLine();
+
         try {
             System.out.println("\n" + programController.getPessoa(nif));
         } catch (EmptyHashtableException | PersonNotFoundException e) {
@@ -274,38 +256,6 @@ public class StartConsole {
                 System.out.println(veiculoCiclo);
             }
         } catch (EmptyHashtableException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // Listar Pessoas Base de Dados
-    public static void opcao9() {
-        System.out.println("========== LISTAR PESSOAS DA BD ===========\n");
-        try {
-            ResultSet pessoas = programController.buscarPessoasBD();
-
-            while (pessoas.next()) {
-                System.out.println("NIF: " + pessoas.getInt(1) +
-                        " - NOME: " + pessoas.getString(2) + " " + pessoas.getString(3));
-            }
-
-        } catch (SQLException | EmptyDatabaseTableException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    // Listar Veiculos Base de Dados
-    public static void opcaoA() {
-        System.out.println("========== LISTAR VEICULOS DA BD ===========\n");
-        try {
-            ResultSet veiculos = programController.buscarVeiculosBD();
-
-            while (veiculos.next()) {
-                System.out.println("MATRICULA: " + veiculos.getString(1) +
-                        " - NIF PROPRIETARIO: " + veiculos.getString(8));
-            }
-
-        } catch (SQLException | EmptyDatabaseTableException e) {
             System.out.println(e.getMessage());
         }
     }
