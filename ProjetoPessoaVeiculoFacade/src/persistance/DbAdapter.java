@@ -1,131 +1,200 @@
 package persistance;
 
-import business.Pessoa;
-import business.VeiculoCombustao;
-import business.VeiculoEletrico;
+import business.Models.Pessoa;
+import business.Models.Veiculo;
+import business.Models.VeiculoCombustao;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
-import java.util.PropertyResourceBundle;
 
 public class DbAdapter {
 
-    private static DbAdapter instance;
-
-    static Connection connection;
-
-    private DbAdapter() throws SQLException, IOException {
-        FileInputStream fis = new FileInputStream("./resources/dbconfig.properties");
-        PropertyResourceBundle resourceBundle = new PropertyResourceBundle(fis);
-        connection = DriverManager.getConnection(
-                resourceBundle.getString("development.url"),
-                resourceBundle.getString("development.username"),
-                resourceBundle.getString("development.password"));
-    }
-
-    public static DbAdapter getInstance() {
-        if (instance == null) {
-            try {
-                instance = new DbAdapter();
-            } catch (SQLException | IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
-    }
-
+    private static Connection connection;
 
 
     // Pessoas
 
-    public ResultSet inicializarHashTablePessoas() throws SQLException {
+    public static ResultSet inicializarHashTablePessoas() {
 
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM pessoa;");
+        String sql = "SELECT * FROM pessoa;";
 
-        return preparedStatement.executeQuery();
+        connection = ConnectionManager.getConnection();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            return preparedStatement.executeQuery();
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível retornar o ResultSet para inicializar a hashtable de pessoas.");
+        }
+
+        return null;
     }
 
-    public ResultSet buscarVeiculosPessoa(String nif) throws SQLException {
+    public static ResultSet buscarVeiculosPessoa(String nif) {
 
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM veiculo WHERE pessoa_nif=?;");
-        preparedStatement.setInt(1, Integer.parseInt(nif));
+        String sql = "SELECT * FROM veiculo WHERE pessoa_nif=?;";
 
-        return preparedStatement.executeQuery();
+        connection = ConnectionManager.getConnection();
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, Integer.parseInt(nif));
+            return preparedStatement.executeQuery();
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível retornar o ResultSet com os veículos da pessoa.");
+        }
+
+        return null;
     }
 
-    public void adicionarPessoa(Pessoa pessoa) throws SQLException {
+    public static void adicionarPessoa(Pessoa pessoa) {
 
-        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO pessoa VALUES(?, ?, ?, ?);");
-        preparedStatement.setInt(1, Integer.parseInt(pessoa.getNif()));
-        preparedStatement.setString(2, pessoa.getNome());
-        preparedStatement.setString(3, pessoa.getApelido());
-        preparedStatement.setString(4, pessoa.getIdade());
+        String sql = "INSERT INTO pessoa VALUES(?, ?, ?, ?);";
 
-        preparedStatement.execute();
+        connection = ConnectionManager.getConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, Integer.parseInt(pessoa.getNif()));
+            preparedStatement.setString(2, pessoa.getNome());
+            preparedStatement.setString(3, pessoa.getApelido());
+            preparedStatement.setString(4, pessoa.getIdade());
+
+            preparedStatement.execute();
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível adicionar a pessoa.");
+        }
+        finally {
+            ConnectionManager.closeConnection();
+            connection = null;
+        }
+
     }
 
-    public boolean removerPessoa(String nif) throws SQLException {
+    public static boolean removerPessoa(String nif) {
 
-        PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM pessoa where nif=?;");
-        preparedStatement.setString(1, nif);
+        String sql = "DELETE FROM pessoa where nif=?;";
 
-        return preparedStatement.executeUpdate() == 1;
+        connection = ConnectionManager.getConnection();
+
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, nif);
+            return preparedStatement.executeUpdate() > 0;
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível remover a pessoa.");
+        }
+        finally {
+            ConnectionManager.closeConnection();
+            connection = null;
+        }
+
+        return false;
     }
 
 
 
     // Veiculos
 
-    public ResultSet inicializarHashTableVeiculos() throws SQLException {
+    public static ResultSet inicializarHashTableVeiculos() {
+        
+        String sql = "SELECT * FROM veiculo;";
 
-        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM veiculo;");
+        connection = ConnectionManager.getConnection();
 
-        return preparedStatement.executeQuery();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            return preparedStatement.executeQuery();
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível retornar o ResultSet para inicializar a hashtable de veículos.");
+        }
+        
+        return null;
     }
 
-    public void adicionarVeiculoCombustao(String nif, VeiculoCombustao veiculo) throws SQLException {
+    public static void adicionarVeiculo(String nif, Veiculo veiculo){
 
-        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO veiculo VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);");
-        preparedStatement.setString(1, veiculo.getMatricula());
-        preparedStatement.setString(2, veiculo.getMarca());
-        preparedStatement.setString(3, veiculo.getModelo());
-        preparedStatement.setString(4, veiculo.getChassi());
-        preparedStatement.setInt(5, veiculo.getCilindrada());
-        preparedStatement.setInt(6, Integer.parseInt(veiculo.getLugares()));
-        preparedStatement.setInt(7, Integer.parseInt(veiculo.getPortas()));
-        preparedStatement.setString(8, nif);
-        preparedStatement.setInt(9, 1);
+        String sql;
 
-        preparedStatement.execute();
+        connection = ConnectionManager.getConnection();
+
+        if (veiculo instanceof VeiculoCombustao){
+            sql = "INSERT INTO veiculo VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        } else {
+            sql = "INSERT INTO veiculo(matricula, marca, modelo, chassi, lugares, portas, pessoa_nif, tipo_veiculo_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, veiculo.getMatricula());
+            preparedStatement.setString(2, veiculo.getMarca());
+            preparedStatement.setString(3, veiculo.getModelo());
+            preparedStatement.setString(4, veiculo.getChassi());
+
+            if (veiculo instanceof VeiculoCombustao){
+                preparedStatement.setInt(5, ((VeiculoCombustao) veiculo).getCilindrada());
+                preparedStatement.setInt(6, Integer.parseInt(veiculo.getLugares()));
+                preparedStatement.setInt(7, Integer.parseInt(veiculo.getPortas()));
+                preparedStatement.setString(8, nif);
+                preparedStatement.setInt(9, 1);
+            } else {
+                preparedStatement.setInt(5, Integer.parseInt(veiculo.getLugares()));
+                preparedStatement.setInt(6, Integer.parseInt(veiculo.getPortas()));
+                preparedStatement.setString(7, nif);
+                preparedStatement.setInt(8, 2);
+            }
+
+            preparedStatement.execute();
+
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível adicionar o veículo.");
+        }
+        finally {
+            ConnectionManager.closeConnection();
+            connection = null;
+        }
     }
 
-    public void adicionarVeiculoEletrico(String nif, VeiculoEletrico veiculo) throws SQLException {
+    public static boolean removerVeiculo(String matricula) {
 
-        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO veiculo(matricula, marca, modelo, chassi, lugares, portas, pessoa_nif, tipo_veiculo_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?);");
-        preparedStatement.setString(1, veiculo.getMatricula());
-        preparedStatement.setString(2, veiculo.getMarca());
-        preparedStatement.setString(3, veiculo.getModelo());
-        preparedStatement.setString(4, veiculo.getChassi());
-        preparedStatement.setInt(5, Integer.parseInt(veiculo.getLugares()));
-        preparedStatement.setInt(6, Integer.parseInt(veiculo.getPortas()));
-        preparedStatement.setString(7, nif);
-        preparedStatement.setInt(8, 2);
+        String sql = "DELETE FROM veiculo where matricula=?;";
 
-        preparedStatement.execute();
+        connection = ConnectionManager.getConnection();
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, matricula);
+            return preparedStatement.executeUpdate() > 0;
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível remover o veículo.");
+        }
+        finally {
+            ConnectionManager.closeConnection();
+            connection = null;
+        }
+
+        return false;
     }
 
-    public boolean removerVeiculo(String matricula) throws SQLException {
-        PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM veiculo where matricula=?;");
-        preparedStatement.setString(1, matricula);
+    public static void removerVeiculosPessoa(String nif){
 
-        return preparedStatement.executeUpdate() == 1;
-    }
+        String sql = "DELETE FROM veiculo where pessoa_nif=?;";
 
-    public void removerVeiculosPessoa(String nif) throws SQLException {
-        PreparedStatement preparedStatement  = connection.prepareStatement("DELETE FROM veiculo where pessoa_nif=?;");
-        preparedStatement.setString(1, nif);
+        connection = ConnectionManager.getConnection();
 
-        preparedStatement.executeUpdate();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, nif);
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException e) {
+            System.out.println("\nNão foi possível remover os veículos da pessoa.");
+        }
+        finally {
+            ConnectionManager.closeConnection();
+            connection = null;
+        }
     }
 }

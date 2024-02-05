@@ -1,8 +1,7 @@
-package business;
+package business.Models;
 
 import exceptions.InvalidPersonDataException;
 import exceptions.MoreThanThreeVehiclesException;
-import exceptions.VehicleNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -102,25 +101,11 @@ public class Pessoa {
             return veiculos;
     }
 
-    public void setVeiculoCombustao(VeiculoCombustao veiculo) throws MoreThanThreeVehiclesException {
+    public void setVeiculo(Veiculo veiculo) throws MoreThanThreeVehiclesException {
         if (this.veiculos.size() < 3) {
             this.veiculos.add(veiculo);
         } else {
             throw new MoreThanThreeVehiclesException("O limite de veículos foi atingido.");
-        }
-    }
-
-    public void setVeiculoEletrico(VeiculoEletrico veiculo) throws MoreThanThreeVehiclesException {
-        if (this.veiculos.size() < 3) {
-            this.veiculos.add(veiculo);
-        } else {
-            throw new MoreThanThreeVehiclesException("O limite de veículos foi atingido.");
-        }
-    }
-
-    public void removerVeiculo(int index) throws VehicleNotFoundException {
-        if (veiculos.remove(index) == null) {
-            throw new VehicleNotFoundException("A lista de veículos da pessoa está vazia.");
         }
     }
 

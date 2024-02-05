@@ -1,5 +1,7 @@
 package business;
 
+import business.Models.Pessoa;
+import business.Models.Veiculo;
 import exceptions.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -43,16 +45,9 @@ public class ProgramController {
 
     // Veiculos
 
-    public void adicionarVeiculoCombustao(String nif, String matricula, String marca, String modelo, String chassi, int cilindrada, String lugares, String portas)
+    public void adicionarVeiculo(String nif, Veiculo veiculo)
             throws MoreThanThreeVehiclesException, SQLException {
-        gestorVeiculos.adicionarVeiculoCombustao(nif, matricula, marca, modelo, chassi, cilindrada, lugares, portas);
-        gestorPessoas = new GestorPessoas();
-        gestorVeiculos = new GestorVeiculos();
-    }
-
-    public void adicionarVeiculoEletrico(String nif, String matricula, String marca, String modelo, String chassi, String lugares, String portas)
-            throws MoreThanThreeVehiclesException, SQLException {
-        gestorVeiculos.adicionarVeiculoEletrico(nif, matricula, marca, modelo, chassi, lugares, portas);
+        gestorVeiculos.adicionarVeiculo(nif, veiculo);
         gestorPessoas = new GestorPessoas();
         gestorVeiculos = new GestorVeiculos();
     }

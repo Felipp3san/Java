@@ -1,4 +1,4 @@
-package business;
+package business.Models;
 
 import java.util.Objects;
 
@@ -6,17 +6,12 @@ public class VeiculoEletrico extends Veiculo {
 
     public VeiculoEletrico() {
         super();
+        setTaxaFixaAnual(25.0);
     }
 
     public VeiculoEletrico(String matricula, String marca, String modelo, String chassi, String lugares, String portas) {
         super(matricula, marca, modelo, chassi, lugares, portas);
         setTaxaFixaAnual(25.0);
-    }
-
-
-    @Override
-    public void setTaxaFixaAnual() {
-        super.setTaxaFixaAnual(25.0);
     }
 
     @Override

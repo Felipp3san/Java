@@ -1,4 +1,4 @@
-package business;
+package business.Models;
 
 import exceptions.InvalidVehicleDataException;
 
@@ -26,13 +26,13 @@ public class Veiculo {
         this.taxaFixaAnual = 0.0;
     }
 
-    public Veiculo(String matricula, String marca, String modelo, String chassi, String lugares, String portas) throws InvalidVehicleDataException {
-        setMatricula(matricula);
-        setMarca(marca);
-        setModelo(modelo);
-        setChassi(chassi);
-        setLugares(lugares);
-        setPortas(portas);
+    public Veiculo(String matricula, String marca, String modelo, String chassi, String lugares, String portas) {
+        this.matricula = matricula;
+        this.marca = marca;
+        this.modelo = modelo;
+        this.chassi = chassi;
+        this.lugares = lugares;
+        this.portas = portas;
         this.taxaFixaAnual = 0.0;
     }
 
@@ -144,9 +144,6 @@ public class Veiculo {
 
     public void setTaxaFixaAnual(double taxaFixaAnual) {
         this.taxaFixaAnual = taxaFixaAnual;
-    }
-
-    public void setTaxaFixaAnual() {
     }
 
     @Override

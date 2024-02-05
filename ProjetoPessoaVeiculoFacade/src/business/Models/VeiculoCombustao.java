@@ -1,5 +1,4 @@
-package business;
-import exceptions.InvalidVehicleDataException;
+package business.Models;
 
 import java.util.Objects;
 
@@ -9,9 +8,10 @@ public class VeiculoCombustao extends Veiculo {
 
     public VeiculoCombustao() {
         super();
+        setTaxaFixaAnual(100.00);
     }
 
-    public VeiculoCombustao(String matricula, String marca, String modelo, String chassi, int cilindrada, String lugares, String portas) throws InvalidVehicleDataException {
+    public VeiculoCombustao(String matricula, String marca, String modelo, String chassi, int cilindrada, String lugares, String portas) {
         super(matricula, marca, modelo, chassi, lugares, portas);
         setCilindrada(cilindrada);
         setTaxaFixaAnual(100.00 + (getCilindrada() * 0.025));

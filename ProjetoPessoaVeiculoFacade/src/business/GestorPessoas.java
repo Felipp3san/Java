@@ -1,6 +1,11 @@
 package business;
 
+import business.Models.Pessoa;
+import business.Models.Veiculo;
+import business.Models.VeiculoCombustao;
+import business.Models.VeiculoEletrico;
 import exceptions.*;
+import persistance.ConnectionManager;
 import persistance.DbWorker;
 
 import java.sql.ResultSet;
@@ -16,8 +21,11 @@ public class GestorPessoas {
 
         ResultSet pessoasSet = DbWorker.inicializarHashtablePessoas();
 
+        Pessoa pessoa;
+        Veiculo veiculo;
+
         while(pessoasSet.next()){
-            Pessoa pessoa = new Pessoa(
+            pessoa = new Pessoa(
                     pessoasSet.getString(1),
                     pessoasSet.getString(2),
                     pessoasSet.getString(3),
@@ -27,9 +35,8 @@ public class GestorPessoas {
             ResultSet veiculosSet = DbWorker.buscarVeiculosPessoa(pessoasSet.getString(1));
 
             while(veiculosSet.next()){
-
-                if (veiculosSet.getInt(9) == 1) {
-                    VeiculoCombustao veiculo = new VeiculoCombustao(
+                if (veiculosSet.getInt(9) == 1){
+                    veiculo = new VeiculoCombustao(
                             veiculosSet.getString(1),
                             veiculosSet.getString(2),
                             veiculosSet.getString(3),
@@ -38,15 +45,9 @@ public class GestorPessoas {
                             veiculosSet.getString(6),
                             veiculosSet.getString(7)
                     );
-
-                    try {
-                        pessoa.setVeiculoCombustao(veiculo);
-                    } catch (MoreThanThreeVehiclesException e) {
-                        throw new RuntimeException(e);
-                    }
                 }
                 else {
-                    VeiculoEletrico veiculo = new VeiculoEletrico(
+                    veiculo = new VeiculoEletrico(
                             veiculosSet.getString(1),
                             veiculosSet.getString(2),
                             veiculosSet.getString(3),
@@ -54,20 +55,21 @@ public class GestorPessoas {
                             veiculosSet.getString(6),
                             veiculosSet.getString(7)
                     );
-                    try {
-                        pessoa.setVeiculoEletrico(veiculo);
-                    } catch (MoreThanThreeVehiclesException e) {
-                        throw new RuntimeException(e);
-                    }
+                }
+                try {
+                    pessoa.setVeiculo(veiculo);
+                } catch (MoreThanThreeVehiclesException e) {
+                    System.out.println("\nO limite de 3 veículos foi atingido. (Inicializando hashtable pessoas)");
                 }
             }
-
             pessoas.put(pessoasSet.getString(1), pessoa);
+            veiculosSet.close();
         }
+        pessoasSet.close();
+        ConnectionManager.closeConnection();
     }
 
-    public void adicionarPessoa(Pessoa pessoa) throws SQLException {
-
+    public void adicionarPessoa(Pessoa pessoa) {
         DbWorker.adicionarPessoa(pessoa);
     }
 
