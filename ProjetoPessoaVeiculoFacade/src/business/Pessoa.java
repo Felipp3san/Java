@@ -102,7 +102,15 @@ public class Pessoa {
             return veiculos;
     }
 
-    public void setVeiculo(Veiculo veiculo) throws MoreThanThreeVehiclesException {
+    public void setVeiculoCombustao(VeiculoCombustao veiculo) throws MoreThanThreeVehiclesException {
+        if (this.veiculos.size() < 3) {
+            this.veiculos.add(veiculo);
+        } else {
+            throw new MoreThanThreeVehiclesException("O limite de veículos foi atingido.");
+        }
+    }
+
+    public void setVeiculoEletrico(VeiculoEletrico veiculo) throws MoreThanThreeVehiclesException {
         if (this.veiculos.size() < 3) {
             this.veiculos.add(veiculo);
         } else {

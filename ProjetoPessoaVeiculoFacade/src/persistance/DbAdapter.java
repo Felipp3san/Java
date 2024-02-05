@@ -1,7 +1,8 @@
 package persistance;
 
-import business.Veiculo;
 import business.Pessoa;
+import business.VeiculoCombustao;
+import business.VeiculoEletrico;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class DbAdapter {
         }
         return instance;
     }
+
 
 
     // Pessoas
@@ -82,17 +84,33 @@ public class DbAdapter {
         return preparedStatement.executeQuery();
     }
 
-    public void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
+    public void adicionarVeiculoCombustao(String nif, VeiculoCombustao veiculo) throws SQLException {
 
-        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO veiculo VALUES(?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO veiculo VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);");
         preparedStatement.setString(1, veiculo.getMatricula());
         preparedStatement.setString(2, veiculo.getMarca());
         preparedStatement.setString(3, veiculo.getModelo());
         preparedStatement.setString(4, veiculo.getChassi());
-        preparedStatement.setInt(5, Integer.parseInt(veiculo.getCilindrada()));
+        preparedStatement.setInt(5, veiculo.getCilindrada());
         preparedStatement.setInt(6, Integer.parseInt(veiculo.getLugares()));
         preparedStatement.setInt(7, Integer.parseInt(veiculo.getPortas()));
         preparedStatement.setString(8, nif);
+        preparedStatement.setInt(9, 1);
+
+        preparedStatement.execute();
+    }
+
+    public void adicionarVeiculoEletrico(String nif, VeiculoEletrico veiculo) throws SQLException {
+
+        PreparedStatement preparedStatement  = connection.prepareStatement("INSERT INTO veiculo(matricula, marca, modelo, chassi, lugares, portas, pessoa_nif, tipo_veiculo_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?);");
+        preparedStatement.setString(1, veiculo.getMatricula());
+        preparedStatement.setString(2, veiculo.getMarca());
+        preparedStatement.setString(3, veiculo.getModelo());
+        preparedStatement.setString(4, veiculo.getChassi());
+        preparedStatement.setInt(5, Integer.parseInt(veiculo.getLugares()));
+        preparedStatement.setInt(6, Integer.parseInt(veiculo.getPortas()));
+        preparedStatement.setString(7, nif);
+        preparedStatement.setInt(8, 2);
 
         preparedStatement.execute();
     }

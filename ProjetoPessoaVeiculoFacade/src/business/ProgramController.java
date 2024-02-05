@@ -43,9 +43,16 @@ public class ProgramController {
 
     // Veiculos
 
-    public void adicionarVeiculo(Veiculo veiculo, String nif)
+    public void adicionarVeiculoCombustao(String nif, String matricula, String marca, String modelo, String chassi, int cilindrada, String lugares, String portas)
             throws MoreThanThreeVehiclesException, SQLException {
-        gestorVeiculos.adicionarVeiculo(veiculo, nif);
+        gestorVeiculos.adicionarVeiculoCombustao(nif, matricula, marca, modelo, chassi, cilindrada, lugares, portas);
+        gestorPessoas = new GestorPessoas();
+        gestorVeiculos = new GestorVeiculos();
+    }
+
+    public void adicionarVeiculoEletrico(String nif, String matricula, String marca, String modelo, String chassi, String lugares, String portas)
+            throws MoreThanThreeVehiclesException, SQLException {
+        gestorVeiculos.adicionarVeiculoEletrico(nif, matricula, marca, modelo, chassi, lugares, portas);
         gestorPessoas = new GestorPessoas();
         gestorVeiculos = new GestorVeiculos();
     }

@@ -1,6 +1,7 @@
 package business;
 
 import exceptions.EmptyHashtableException;
+import exceptions.InvalidVehicleDataException;
 import exceptions.VehicleNotFoundException;
 import persistance.DbWorker;
 
@@ -13,27 +14,52 @@ public class GestorVeiculos {
 
     Hashtable<String, Veiculo> veiculos = new Hashtable<>();
 
-    public GestorVeiculos() throws SQLException {
+    public GestorVeiculos() throws SQLException, InvalidVehicleDataException {
 
         ResultSet veiculosSet = DbWorker.inicializarHashtableVeiculos();
 
         while(veiculosSet.next()){
-            Veiculo veiculo = new Veiculo(
-                    veiculosSet.getString(1),
-                    veiculosSet.getString(2),
-                    veiculosSet.getString(3),
-                    veiculosSet.getString(4),
-                    veiculosSet.getString(5),
-                    veiculosSet.getString(6),
-                    veiculosSet.getString(7)
-                    );
-            veiculos.put(veiculosSet.getString(1), veiculo);
+
+            if (veiculosSet.getInt(9) == 1){
+                VeiculoCombustao veiculo = new VeiculoCombustao(
+                        veiculosSet.getString(1),
+                        veiculosSet.getString(2),
+                        veiculosSet.getString(3),
+                        veiculosSet.getString(4),
+                        veiculosSet.getInt(5),
+                        veiculosSet.getString(6),
+                        veiculosSet.getString(7)
+                );
+                veiculos.put(veiculosSet.getString(1), veiculo);
+            }
+            else {
+                VeiculoEletrico veiculo = new VeiculoEletrico(
+                        veiculosSet.getString(1),
+                        veiculosSet.getString(2),
+                        veiculosSet.getString(3),
+                        veiculosSet.getString(4),
+                        veiculosSet.getString(6),
+                        veiculosSet.getString(7)
+                );
+                veiculos.put(veiculosSet.getString(1), veiculo);
+            }
+
         }
     }
 
-    public void adicionarVeiculo(Veiculo veiculo, String nif) throws SQLException {
+    public void adicionarVeiculoCombustao(String nif, String matricula, String marca, String modelo, String chassi, int cilindrada, String lugares, String portas) throws SQLException {
 
-        DbWorker.adicionarVeiculo(veiculo, nif);
+        VeiculoCombustao veiculo = new VeiculoCombustao(matricula, marca, modelo, chassi, cilindrada, lugares, portas);
+
+        DbWorker.adicionarVeiculoCombustao(nif, veiculo);
+        new GestorVeiculos();
+    }
+
+    public void adicionarVeiculoEletrico(String nif, String matricula, String marca, String modelo, String chassi, String lugares, String portas) throws SQLException {
+
+        VeiculoEletrico veiculo = new VeiculoEletrico(matricula, marca, modelo, chassi, lugares, portas);
+
+        DbWorker.adicionarVeiculoEletrico(nif, veiculo);
         new GestorVeiculos();
     }
 

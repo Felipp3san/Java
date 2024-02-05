@@ -1,8 +1,6 @@
 package presentation;
 
-import business.Pessoa;
-import business.ProgramController;
-import business.Veiculo;
+import business.*;
 import exceptions.*;
 
 import java.io.IOException;
@@ -13,10 +11,8 @@ public class StartConsole {
 
     static Scanner scanner = new Scanner(System.in);
     static Pessoa pessoa;
-    static Veiculo veiculo;
     static String op = "";
     static String nif;
-    static String matricula;
     static ProgramController programController = null;
 
     public static void main(String[] args) {
@@ -158,28 +154,34 @@ public class StartConsole {
             nif = scanner.nextLine();
             programController.getPessoa(nif);
 
-            veiculo = new Veiculo();
+            System.out.print("Informe ao tipo de veiculo (1 - Combustão e 2 - Elétrico): ");
+            String tipoVeiculo = scanner.nextLine();
             System.out.print("Informe a matricula do veiculo ('XXXXXX' 6 digitos): ");
-            veiculo.setMatricula(scanner.nextLine());
+            String matricula = scanner.nextLine();
             System.out.print("Informe a marca do veiculo: ");
-            veiculo.setMarca(scanner.nextLine());
+            String marca = scanner.nextLine();
             System.out.print("Informe o modelo do veiculo: ");
-            veiculo.setModelo(scanner.nextLine());
+            String modelo = scanner.nextLine();
             System.out.print("Informe o chassi do veiculo ('XXXXXXXXXXXX' 12 digitos): ");
-            veiculo.setChassi(scanner.nextLine());
-            System.out.print("Informe a cilindrada do veiculo: ");
-            veiculo.setCilindrada(scanner.nextLine());
+            String chassi = scanner.nextLine();
             System.out.print("Informe a quantidade de lugares do veiculo: ");
-            veiculo.setLugares(scanner.nextLine());
+            String lugares = scanner.nextLine();
             System.out.print("Informe a quantidade de portas do veiculo: ");
-            veiculo.setPortas(scanner.nextLine());
+            String portas = scanner.nextLine();
 
-            programController.adicionarVeiculo(veiculo, nif);
+            if (tipoVeiculo.equals("1")){
+                System.out.print("Informe a cilindrada do veiculo: ");
+                int cilindrada = scanner.nextInt();
+                scanner.nextLine();
+                programController.adicionarVeiculoCombustao(nif, matricula, marca, modelo, chassi, cilindrada, lugares, portas);
+            }
+            else {
+                programController.adicionarVeiculoEletrico(nif, matricula, marca, modelo, chassi, lugares, portas);
+            }
 
             System.out.println("\nVeiculo adicionado com sucesso!");
 
-        } catch (EmptyHashtableException | PersonNotFoundException | MoreThanThreeVehiclesException |
-                 InvalidVehicleDataException | SQLException e) {
+        } catch (EmptyHashtableException | PersonNotFoundException | MoreThanThreeVehiclesException | SQLException e) {
             System.out.println("\n" + e.getMessage());
         }
     }
@@ -194,7 +196,7 @@ public class StartConsole {
             programController.getPessoa(nif);
 
             System.out.print("Informe a matricula do veículo ('XXXXXX' 6 digitos): ");
-            matricula = scanner.nextLine();
+            String matricula = scanner.nextLine();
             programController.getVeiculo(matricula);
 
             programController.removerVeiculo(matricula);
